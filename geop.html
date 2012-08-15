@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+
+    <title>OffLine</title>
+
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <script src="js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="js/OpenLayers.js"></script>
+    <script src="js/offlinegeoportail.js"></script>
+
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        .ui-content {
+            padding: 0;
+        }
+
+            /* nav */
+        #navigation {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+        #navigation .ui-btn-icon-notext {
+            display: block;
+            padding: 7px 6px 7px 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div data-role="page">
+
+    <div data-role="header">
+        <h2>Plan</h2>
+        <a href="#" id="btnGeoloc" data-role="button" data-icon="search" data-theme="a">Geoloc</a>
+    </div>
+
+    <div data-role="content">
+
+        <div id="map"></div>
+
+    </div>
+
+    <div id="navigation" data-role="controlgroup" data-type="vertical">
+        <a href="#" data-role="button" data-icon="plus" id="plus"
+           data-iconpos="notext"></a>
+        <a href="#" data-role="button" data-icon="minus" id="minus"
+           data-iconpos="notext"></a>
+    </div>
+</div>
+
+</body>
+</html>

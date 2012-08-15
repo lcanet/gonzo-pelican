@@ -1,0 +1,13 @@
+- base layer "blanche" vide (avec logo) + switcher base layer
+- configuration (popup et localstorage)
+    base url
+    ajout de layers (nom, lat, lon)
+- enlever fond rouge si pas trouvé
+- bouton retour centrage
+
+** V2
+- downloader packager
+
+
+-----
+Deployer proxy sur tekila
