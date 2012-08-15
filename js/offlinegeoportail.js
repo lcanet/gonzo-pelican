@@ -92,6 +92,9 @@ $(document).bind('pageinit', function(){
     $("#btnGeoloc").live('click', function(){
         toggleGeoloc();
     });
+    $("#btnRaz").live('click', function(){
+        razZoomPosition();
+    });
 
 
     if (!localStorage) {
@@ -113,6 +116,11 @@ function jumpTo(marker){
     }
 }
 
+function razZoomPosition() {
+    var center = new OpenLayers.LonLat(4.84222, 45.759723).transform(projGps, projCarte);
+    map.setCenter(center, 6);
+
+}
 
 function overlay_getTileURL(bounds) {
     var res = this.map.getResolution();
@@ -231,7 +239,5 @@ function initMap() {
     positionLayer = new OpenLayers.Layer.Markers( "Position" );
     map.addLayer(positionLayer);
 
-    var center = new OpenLayers.LonLat(4.84222, 45.759723).transform(projGps, projCarte);
-    map.setCenter(center, 6);
-
+    razZoomPosition();
 }
