@@ -22,9 +22,12 @@ var mapBounds = new OpenLayers.Bounds( -6.24618049132, 41.0863434133, 9.41647074
 var mapMinZoom = 1;
 var mapMaxZoom = 10;
 
+// carte et ses couches
 var map;
 var tileLayers;
 var positionLayer;
+
+// projection frequemments utilisées
 var projGps;
 var projCarte;
 
@@ -225,10 +228,8 @@ function initMap() {
     map.addLayer(cacheMarkers);
 
     // geoloc
-
     positionLayer = new OpenLayers.Layer.Markers( "Position" );
     map.addLayer(positionLayer);
-
 
     var center = new OpenLayers.LonLat(4.84222, 45.759723).transform(projGps, projCarte);
     map.setCenter(center, 6);
