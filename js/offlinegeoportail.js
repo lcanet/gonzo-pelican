@@ -1,19 +1,5 @@
-var baseTileDir = "file:///d:/projets/carto-data/";
-//var baseTileDir = "file:///sdcard/offlinegeoportail/data/";
-
-var couchesCache = [
-    {
-        name: "St Jean de Maurienne ",
-        place: { lat : 45.272889, lon : 6.348444},
-        dir: "stjm"
-    },
-    {
-        name: "Lyon",
-        place: { lat : 45.759723, lon : 4.842223},
-        dir: "lyon"
-    }
-
-];
+var baseTileDir;
+var couchesCache;
 
 // Variables de la carte
 
@@ -80,25 +66,42 @@ function toggleGeoloc() {
     }
 }
 
-$(document).bind('pageinit', function(){
-    $("#plus").live('click', function(){
-        map.zoomIn();
-    });
+$(document).bind('pageinit', function(evt){
+    loadConfig();
 
-    $("#minus").live('click', function(){
-        map.zoomOut();
-    });
+    var pagename = $(evt.target).attr("id");
+    if (pagename == "config") {
+        initConfigPage();
+    }
+    if (pagename == "ajoutZone") {
+        initAjoutZonePage();
+    }
+    if (pagename == "mainPage") {
+        $("#plus").live('click', function(){
+            map.zoomIn();
+        });
 
-    $("#btnGeoloc").live('click', function(){
-        toggleGeoloc();
-    });
-    $("#btnRaz").live('click', function(){
-        razZoomPosition();
-    });
+        $("#minus").live('click', function(){
+            map.zoomOut();
+        });
 
+        $("#btnGeoloc").live('click', function(){
+            toggleGeoloc();
+        });
+        $("#btnRaz").live('click', function(){
+            razZoomPosition();
+        });
+    }
 
-    if (!localStorage) {
-        alert("Storage local pas supporté");
+});
+
+$(document).bind('pageshow', function(evt, data) {
+    var pagename = $(evt.target).attr("id");
+    if (pagename == "config"){
+        refreshConfigPage();
+    }
+    if (pagename == "ajoutZone") {
+        refreshAjoutZonePage();
     }
 });
 
@@ -136,6 +139,8 @@ function overlay_getTileURL(bounds) {
 }
 
 function initMap() {
+    loadConfig();
+
     projGps = new OpenLayers.Projection("EPSG:4326");
     projCarte = new OpenLayers.Projection("EPSG:900913");
 
@@ -191,7 +196,6 @@ function initMap() {
     );
     map.addLayer(offlineCarte);
 
-
     /* couches de markers */
     var cacheMarkers = new OpenLayers.Layer.Markers( "Zones sauvegardées" );
 
@@ -200,8 +204,6 @@ function initMap() {
     var icon = new OpenLayers.Icon('img/marker.png',size,offset);
 
     tileLayers = [];
-    var features = [];
-
     for (var i = 0; i < couchesCache.length; i++) {
         var couche = couchesCache[i];
         var pos = new OpenLayers.LonLat(couche.place.lon, couche.place.lat).transform(projGps, projCarte);
@@ -240,4 +242,98 @@ function initMap() {
     map.addLayer(positionLayer);
 
     razZoomPosition();
+}
+
+function loadConfig() {
+    if (!localStorage) {
+        alert("Storage local pas supporté");
+    }
+
+    if (baseTileDir == null) {
+        baseTileDir = localStorage.getItem("baseTileDir");
+        if (!baseTileDir){
+            baseTileDir = "?";
+        }
+    }
+    if (couchesCache == null) {
+        var cc = localStorage.getItem("couchesCache");
+        if (cc) {
+            couchesCache = JSON.parse(cc);
+        } else {
+            couchesCache = [];
+        }
+    }
+}
+
+function initConfigPage(){
+    loadConfig();
+
+    $("#btnValiderConfig").click(function(){
+        saveConfig();
+        $.mobile.changePage($("#mainPage"));
+    });
+    $("#config a.lienZone").live('click', function(){
+        var idx = $(this).data("idx");
+        areYouSure("Confirmation", "suppression de la zone " + couchesCache[idx].name,
+            function(){
+                couchesCache.splice(idx, 1);
+                refreshConfigPage();
+            });
+        return false;
+    });
+}
+
+function refreshConfigPage() {
+    // url base
+    $("#txtBaseUrl").val(baseTileDir);
+
+    var listZones = $("#listZones");
+    listZones.empty();
+    for (var i = 0; i < couchesCache.length; i++) {
+        var eltLien = $('<a href="#" class="lienZone">' +
+            couchesCache[i].name +
+            ' (' +
+            couchesCache[i].dir +  ')</a>').data("idx", i);
+
+        var elt = $('<li data-theme="c"></li>').append(eltLien);
+        listZones.append(elt);
+    }
+    listZones.listview('refresh');
+
+}
+
+function initAjoutZonePage() {
+
+    $("#btnValiderZone").click(function(){
+        var newZone = {
+            name: $("#txtZoneName").val(),
+            dir: $("#txtZoneDir").val(),
+            place: {
+                lat: parseFloat($("#txtZoneLat").val()),
+                lon: parseFloat($("#txtZoneLon").val())
+            }
+        }
+        couchesCache.push(newZone);
+        $.mobile.changePage($("#config"));
+    });
+}
+
+function refreshAjoutZonePage() {
+    $("#ajoutZone input").val("");
+}
+
+function saveConfig() {
+    baseTileDir = $("#txtBaseUrl").val();
+
+    localStorage.setItem("baseTileDir", baseTileDir);
+    localStorage.setItem("couchesCache", JSON.stringify(couchesCache));
+}
+
+var currentAreYouSureCallback;
+
+function areYouSure(text1, text2, callback) {
+    $("#sure .sure-1").text(text1);
+    $("#sure .sure-2").text(text2);
+    currentAreYouSureCallback = callback;
+    $.mobile.changePage("#sure");
 }

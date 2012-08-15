@@ -1,7 +1,6 @@
 - configuration (popup et localstorage)
     base url
     ajout de layers (nom, lat, lon)
-- enlever fond rouge si pas trouvé
 
 ** V2
 - downloader packager
